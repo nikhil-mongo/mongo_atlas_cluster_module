@@ -1,47 +1,30 @@
-resource "mongodbatlas_advanced_cluster" "mongo_atlas_cluster" {
-  project_id   = var.project_id
-  name         = var.name
-  cluster_type = var.cluster_type
-  num_shards   = var.num_shards
-  pit_enabled  = var.pit_enabled
+resource "mongodbatlas_advanced_cluster" "cluster" {
+  project_id    = var.project_id
+  name          = var.cluster_name
+  cluster_type  = var.cluster_type
+  backup_enabled = var.backup_enabled
 
-  replication_specs {
-    num_shards = var.num_shards
-    regions_config {
-      region_name     = var.region_name_1
-      electable_nodes = var.electable_nodes_1
-      priority        = var.priority_1
-      read_only_nodes = var.read_only_nodes_1
-      analytics_nodes = var.analytics_nodes_1
-    }
-    regions_config {
-      region_name     = var.region_name_2
-      electable_nodes = var.electable_nodes_2
-      priority        = var.priority_2
-      read_only_nodes = var.read_only_nodes_2
-      analytics_nodes = var.analytics_nodes_2
-    }
-    regions_config {
-      region_name     = var.region_name_3
-      electable_nodes = var.electable_nodes_3
-      priority        = var.priority_3
-      read_only_nodes = var.read_only_nodes_3
-      analytics_nodes = var.analytics_nodes_3
+  dynamic "replication_specs" {
+    for_each = var.replication_specs
+    content {
+      dynamic "region_configs" {
+        for_each = replication_specs.value.region_configs
+        content {
+          electable_specs {
+            instance_size = region_configs.value.instance_size
+            node_count    = region_configs.value.node_count
+          }
+          provider_name = region_configs.value.provider_name
+          priority      = region_configs.value.priority
+          region_name   = region_configs.value.region_name
+        }
+      }
     }
   }
 
   advanced_configuration {
-    javascript_enabled           = var.javascript_enabled
-    minimum_enabled_tls_protocol = var.minimum_enabled_tls_protocol
+    javascript_enabled                   = var.javascript_enabled
+    oplog_size_mb                        = var.oplog_size_mb
+    sample_refresh_interval_bi_connector = var.sample_refresh_interval_bi_connector
   }
-
-  cloud_backup                 = var.cloud_backup
-  auto_scaling_disk_gb_enabled = var.auto_scaling_disk_gb_enabled
-  mongo_db_major_version       = var.mongo_db_major_version
-
-  provider_name               = var.provider_name
-  disk_size_gb                = var.disk_size_gb
-  provider_disk_iops          = var.provider_disk_iops
-  provider_volume_type        = var.provider_volume_type
-  provider_instance_size_name = var.provider_instance_size_name
 }
