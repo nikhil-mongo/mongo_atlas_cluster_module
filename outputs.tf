@@ -1,7 +1,7 @@
 output "cluster_id" {
-  value = mongodbatlas_advanced_cluster.mongo_atlas_cluster.id
+  value = mongodbatlas_advanced_cluster.cluster.id
 }
 
-output "connection_strings" {
-  value = mongodbatlas_advanced_cluster.mongo_atlas_cluster.connection_strings
+output "cluster_name" {
+  value = mongodbatlas_advanced_cluster.cluster.name
 }
