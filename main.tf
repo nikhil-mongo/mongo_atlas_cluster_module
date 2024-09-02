@@ -1,4 +1,4 @@
-resource "mongodbatlas_cluster" "mongo_atlas_cluster" {
+resource "mongodbatlas_advanced_cluster" "mongo_atlas_cluster" {
   project_id   = var.project_id
   name         = var.name
   cluster_type = var.cluster_type
